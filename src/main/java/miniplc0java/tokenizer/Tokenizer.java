@@ -40,27 +40,65 @@ public class Tokenizer {
 
     private Token lexUInt() throws TokenizeError {
         // 请填空：
+        String num = "";
         // 直到查看下一个字符不是数字为止:
+        while(Character.isDigit(it.peekChar())){
         // -- 前进一个字符，并存储这个字符
+            char peek = it.nextChar();
+            num += peek;
+        }
         //
         // 解析存储的字符串为无符号整数
+        try{
         // 解析成功则返回无符号整数类型的token，否则返回编译错误
+            int a = Integer.parseInt(num);
+            return new Token(TokenType.Uint, a, it.previousPos(), it.currentPos());
+        }
+        catch (NumberFormatException e) {
+            throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
+        }
+        
         //
         // Token 的 Value 应填写数字的值
-        throw new Error("Not implemented");
+
+        // throw new Error("Not implemented");
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {
         // 请填空：
+        String lex = "";
         // 直到查看下一个字符不是数字或字母为止:
-        // -- 前进一个字符，并存储这个字符
+        while(Character.isLetterOrDigit(it.peekChar())){
+        // -- 前进一个字符，并存储这个字符    
+            char peek = it.nextChar();
+            lex += peek;
+        }
+        
         //
         // 尝试将存储的字符串解释为关键字
+        if(lex.equals("BEGIN")){
+            return new Token(TokenType.Begin, lex, it.previousPos(), it.currentPos());
+        }
+        else if (lex.equals("END")){
+            return new Token(TokenType.End, lex, it.previousPos(), it.currentPos());
+        }
+        else if (lex.equals("VAR")) {
+            return new Token(TokenType.Var, lex, it.previousPos(), it.currentPos());
+        }
+        else if (lex.equals("CONST")) {
+            return new Token(TokenType.Const, lex, it.previousPos(), it.currentPos());
+        }
+        else if (lex.equals("PRINT")) {
+            return new Token(TokenType.Print, lex, it.previousPos(), it.currentPos());
+        }
+        else{
+            return new Token(TokenType.Ident, lex, it.previousPos(), it.currentPos());
+        }
         // -- 如果是关键字，则返回关键字类型的 token
         // -- 否则，返回标识符
         //
         // Token 的 Value 应填写标识符或关键字的字符串
-        throw new Error("Not implemented");
+        // throw new Error("Not implemented");
     }
 
     private Token lexOperatorOrUnknown() throws TokenizeError {
@@ -70,15 +108,15 @@ public class Tokenizer {
 
             case '-':
                 // 填入返回语句
-                throw new Error("Not implemented");
+                return new Token(TokenType.Minus, '-', it.previousPos(), it.currentPos());
 
             case '*':
                 // 填入返回语句
-                throw new Error("Not implemented");
+                return new Token(TokenType.Mult, '*', it.previousPos(), it.currentPos());
 
             case '/':
                 // 填入返回语句
-                throw new Error("Not implemented");
+                return new Token(TokenType.Div, '/', it.previousPos(), it.currentPos());
 
             // 填入更多状态和返回语句
 
