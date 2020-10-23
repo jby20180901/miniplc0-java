@@ -384,7 +384,7 @@ public final class Analyser {
         } else if (check(TokenType.Uint)) {
             // 调用相应的处理函数
             var num = (Integer)expect(TokenType.Uint).getValue();
-            //instructions.add(new Instruction(Operation.LIT, num));
+            instructions.add(new Instruction(Operation.LIT, num));
         } else if (check(TokenType.LParen)) {
             // 调用相应的处理函数
             expect(TokenType.LParen);
