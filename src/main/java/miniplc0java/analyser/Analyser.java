@@ -231,18 +231,18 @@ public final class Analyser {
         while (nextIf(TokenType.Const) != null) {
             // 标识符
             var nameToken = expect(TokenType.Ident);
-
-            // 在符号表里面添加这个符号
-            addSymbol(nameToken.getValueString(), false, true, nameToken.getStartPos());
             
             // 等于号
             expect(TokenType.Equal);
 
             // 常表达式
-            analyseConstantExpression(nameToken.getValueString());
+            analyseConstantExpression();
 
             // 分号
             expect(TokenType.Semicolon);
+
+            // 在符号表里面添加这个符号
+            addSymbol(nameToken.getValueString(), true, true, nameToken.getStartPos());
         }
     }
 
@@ -257,7 +257,7 @@ public final class Analyser {
             // 变量名
             var nameToken = expect(TokenType.Ident);
 
-            if(nextIf(TokenType.Semicolon)==null){
+            if(!check(TokenType.Semicolon)){
                 // 等于号
                 expect(TokenType.Equal);
 
@@ -266,6 +266,16 @@ public final class Analyser {
 
                 // 分号
                 expect(TokenType.Semicolon);
+
+                // 在符号表里面添加这个符号,已赋值
+                addSymbol(nameToken.getValueString(), true, true, nameToken.getStartPos());
+            }
+            else{
+                // 分号
+                expect(TokenType.Semicolon);
+
+                // 在符号表里面添加这个符号，未赋值
+                addSymbol(nameToken.getValueString(), false, true, nameToken.getStartPos());
             }
         }
     }
@@ -297,23 +307,23 @@ public final class Analyser {
     /**
      * <常表达式> ::= [<符号>]<无符号整数>
      */
-    private void analyseConstantExpression(String name) throws CompileError {
+    private void analyseConstantExpression() throws CompileError {
         // 常表达式
+        boolean negate;
+        if (nextIf(TokenType.Minus) != null) {
+            negate = true;
+            // 计算结果需要被 0 减
+            instructions.add(new Instruction(Operation.LIT, 0));
+        } else {
+            nextIf(TokenType.Plus);
+            negate = false;
+        }
         Integer num = 0;
-        if(nextIf(TokenType.Plus)!=null){
-            var numToken = expect(TokenType.Uint);
-            num = (Integer) numToken.getValue();
-            declareSymbol(name, numToken.getStartPos());
-        }
-        else if(nextIf(TokenType.Minus)!=null){
-            var numToken = expect(TokenType.Uint);
-            num = (Integer) numToken.getValue() * -1;
-            declareSymbol(name, numToken.getStartPos());
-        }
-        else{
-            var numToken = expect(TokenType.Uint);
-            num = (Integer) numToken.getValue();
-            declareSymbol(name, numToken.getStartPos());
+        var numToken = expect(TokenType.Uint);
+        num = (Integer) numToken.getValue();
+        instructions.add(new Instruction(Operation.LIT, num));
+        if(negate){
+            instructions.add(new Instruction(Operation.SUB));
         }
     }
 
@@ -323,9 +333,18 @@ public final class Analyser {
     private void analyseExpression() throws CompileError {
         // 表达式
         analyseItem();
-        while(nextIf(TokenType.Plus)!=null||nextIf(TokenType.Minus)!=null)
+        while(check(TokenType.Plus)||check(TokenType.Minus))
         {
-            analyseItem();
+            if(nextIf(TokenType.Plus)!=null)
+            {
+                analyseItem();
+                instructions.add(new Instruction(Operation.ADD));
+            }
+            else if(nextIf(TokenType.Minus)!=null)
+            {
+                analyseItem();
+                instructions.add(new Instruction(Operation.SUB));
+            }
         }
     }
 
@@ -334,9 +353,14 @@ public final class Analyser {
      */
     private void analyseAssignmentStatement() throws CompileError {
         // 赋值语句
-        expect(TokenType.Ident);
+        var nameToken = expect(TokenType.Ident);
         expect(TokenType.Equal);
         analyseExpression();
+        expect(TokenType.Semicolon);
+        // STO 相关值
+        instructions.add(new Instruction(Operation.STO,getOffset(nameToken.getValueString(),nameToken.getStartPos())));
+        // 标记相应的符号已赋值
+        declareSymbol(nameToken.getValueString(),nameToken.getStartPos());
     }
 
     /**
@@ -358,8 +382,15 @@ public final class Analyser {
     private void analyseItem() throws CompileError {
         // 项
         analyseFactor();
-        while(nextIf(TokenType.Mult)!=null||nextIf(TokenType.Div)!=null){
-            analyseFactor();
+        while(check(TokenType.Mult)||check(TokenType.Div)){
+            if(nextIf(TokenType.Mult)!=null){
+                analyseFactor();
+                instructions.add(new Instruction(Operation.MUL));
+            }
+            else if(nextIf(TokenType.Div)!=null){
+                analyseFactor();
+                instructions.add(new Instruction(Operation.DIV));
+            }
         }
     }
 
@@ -381,6 +412,7 @@ public final class Analyser {
         if (check(TokenType.Ident)) {
             // 调用相应的处理函数
             var nameToken = expect(TokenType.Ident);
+            /********* */
         } else if (check(TokenType.Uint)) {
             // 调用相应的处理函数
             var num = (Integer)expect(TokenType.Uint).getValue();
