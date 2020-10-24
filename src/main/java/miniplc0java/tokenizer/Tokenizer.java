@@ -122,7 +122,7 @@ public class Tokenizer {
 
             default:
                 // 不认识这个输入，摸了
-                throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
+                throw new TokenizeError(ErrorCode.NoError, it.previousPos());
         }
     }
 
