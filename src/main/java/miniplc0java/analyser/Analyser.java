@@ -412,7 +412,7 @@ public final class Analyser {
         if (check(TokenType.Ident)) {
             // 调用相应的处理函数
             var nameToken = expect(TokenType.Ident);
-            /********* */
+            instructions.add(new Instruction(Operation.LOD,getOffset(nameToken.getValueString(),nameToken.getStartPos())));
         } else if (check(TokenType.Uint)) {
             // 调用相应的处理函数
             var num = (Integer)expect(TokenType.Uint).getValue();

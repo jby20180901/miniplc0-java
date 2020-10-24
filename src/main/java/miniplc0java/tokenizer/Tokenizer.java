@@ -76,19 +76,19 @@ public class Tokenizer {
         
         //
         // 尝试将存储的字符串解释为关键字
-        if(lex.equals("BEGIN")){
+        if(lex.equals("begin")){
             return new Token(TokenType.Begin, lex, it.previousPos(), it.currentPos());
         }
-        else if (lex.equals("END")){
+        else if (lex.equals("end")){
             return new Token(TokenType.End, lex, it.previousPos(), it.currentPos());
         }
-        else if (lex.equals("VAR")) {
+        else if (lex.equals("var")) {
             return new Token(TokenType.Var, lex, it.previousPos(), it.currentPos());
         }
-        else if (lex.equals("CONST")) {
+        else if (lex.equals("const")) {
             return new Token(TokenType.Const, lex, it.previousPos(), it.currentPos());
         }
-        else if (lex.equals("PRINT")) {
+        else if (lex.equals("print")) {
             return new Token(TokenType.Print, lex, it.previousPos(), it.currentPos());
         }
         else{
