@@ -31,7 +31,7 @@ public class Tokenizer {
         char peek = it.peekChar();
         if (Character.isDigit(peek)) {
             return lexUInt();
-        } else if (Character.isAlphabetic(peek)) {
+        } else if (peek >= 'a'||peek <= 'z'||peek >= 'A'||peek <= 'Z') {
             return lexIdentOrKeyword();
         } else {
             return lexOperatorOrUnknown();
@@ -49,14 +49,14 @@ public class Tokenizer {
         }
         //
         // 解析存储的字符串为无符号整数
-        // try{
+        try{
         // 解析成功则返回无符号整数类型的token，否则返回编译错误
             int a = Integer.parseInt(num);
             return new Token(TokenType.Uint, a, it.previousPos(), it.currentPos());
-        // }
-        // catch (NumberFormatException e) {
-        //     throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
-        // }
+        }
+        catch (NumberFormatException e) {
+            throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
+        }
         
         //
         // Token 的 Value 应填写数字的值
@@ -122,7 +122,7 @@ public class Tokenizer {
 
             default:
                 // 不认识这个输入，摸了
-                throw new TokenizeError(ErrorCode.NoError, it.previousPos());
+                throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
         }
     }
 
