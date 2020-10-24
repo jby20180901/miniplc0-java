@@ -121,7 +121,8 @@ public class Tokenizer {
             case '/':
                 // 填入返回语句
                 return new Token(TokenType.Div, '/', it.previousPos(), it.currentPos());
-
+            case '=':
+                return new Token(TokenType.Equal, '=', it.previousPos(), it.currentPos());
             // 填入更多状态和返回语句
 
             default:
