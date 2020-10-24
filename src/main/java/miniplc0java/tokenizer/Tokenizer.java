@@ -1,6 +1,9 @@
 package miniplc0java.tokenizer;
 
 import miniplc0java.error.TokenizeError;
+
+import java.io.PrintStream;
+
 import miniplc0java.error.ErrorCode;
 
 public class Tokenizer {
@@ -29,6 +32,7 @@ public class Tokenizer {
         }
 
         char peek = it.peekChar();
+        System.out.println(peek);
         if (Character.isDigit(peek)) {
             return lexUInt();
         } else if ((peek >= 'a'&&peek <= 'z')||(peek >= 'A'&&peek <= 'Z')) {
