@@ -49,14 +49,14 @@ public class Tokenizer {
         }
         //
         // 解析存储的字符串为无符号整数
-        try{
+        // try{
         // 解析成功则返回无符号整数类型的token，否则返回编译错误
             int a = Integer.parseInt(num);
             return new Token(TokenType.Uint, a, it.previousPos(), it.currentPos());
-        }
-        catch (NumberFormatException e) {
-            throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
-        }
+        // }
+        // catch (NumberFormatException e) {
+        //     throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
+        // }
         
         //
         // Token 的 Value 应填写数字的值
