@@ -31,7 +31,7 @@ public class Tokenizer {
         char peek = it.peekChar();
         if (Character.isDigit(peek)) {
             return lexUInt();
-        } else if (peek >= 'a'||peek <= 'z'||peek >= 'A'||peek <= 'Z') {
+        } else if ((peek >= 'a'&&peek <= 'z')||(peek >= 'A'&&peek <= 'Z')) {
             return lexIdentOrKeyword();
         } else {
             return lexOperatorOrUnknown();
